@@ -27,21 +27,27 @@ public class LotManager {
     }
 
     public void allocate(String vehicleNumber) {
-        ParkingBay bay = this.findVacantBay();
-        if (bay.equals(null)) {
+        ParkingBay existingBay = this.findBayByVehicleNumber(vehicleNumber);
+
+        if (!existingBay.equals(null)) {
+            System.out.println("Vechile " + vehicleNumber + " has already been allocated to bay " + existingBay.bayID);
+            return;
+        }
+
+        ParkingBay emptyBay = this.findVacantBay();
+        if (emptyBay.equals(null)) {
             System.out.println("Sorry, we are full!");
 
         } else {
-            bay.setAllocatedTo(vehicleNumber);
-            System.out.println("Vehicle " + vehicleNumber + " was successfully allocated to bay " + bay.bayID);
+            emptyBay.setAllocatedTo(vehicleNumber);
+            System.out.println("Vehicle " + vehicleNumber + " was successfully allocated to bay " + emptyBay.bayID);
         }
-
     }
 
     public void deAllocate(String vehicleNumber) {
         ParkingBay bay = this.findBayByVehicleNumber(vehicleNumber);
         if (bay.equals(null)) {
-            System.out.println("Unknown bay! Please check the vehicle number and try again");
+            System.out.println("Vehicle " + vehicleNumber + " has not been allocated to any bay");
 
         } else {
             bay.deAllocate();
