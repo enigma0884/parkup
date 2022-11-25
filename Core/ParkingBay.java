@@ -7,12 +7,12 @@ public class ParkingBay {
 
     public final int bayID;
     private String allocatedTo;
-    private BayStatus status;
+    private boolean isVacant;
 
     public ParkingBay(int bayID) {
         this.bayID = bayID;
         this.allocatedTo = null;
-        this.status = BayStatus.VACANT;
+        this.isVacant = true;
     }
 
     public String getAllocatedTo() {
@@ -21,15 +21,15 @@ public class ParkingBay {
 
     public void setAllocatedTo(String allocatedTo) {
         this.allocatedTo = allocatedTo;
-        this.status = BayStatus.OCCUPIED;
+        this.isVacant = false;
     }
 
     public void deAllocate() {
         this.allocatedTo = null;
-        this.status = BayStatus.VACANT;
+        this.isVacant = true;
     }
 
     public boolean isVacant() {
-        return this.status.equals(BayStatus.VACANT);
+        return this.isVacant;
     }
 }
