@@ -2,32 +2,73 @@ package Core;
 
 import java.util.ArrayList;
 
+import Core.Structures.ParkingBay;
+import Core.Structures.EVParkingBay;
+
 public class ParkingLot {
 
-    private static ParkingLot classInstance;
     private final ArrayList<ParkingBay> bays;
-    private final int baySize;
+    private int currentCount = 0;
 
-    public static ParkingLot getInstance(int baySize) {
-        if (ParkingLot.classInstance.equals(null)) {
-            ParkingLot.classInstance = new ParkingLot(baySize);
-            return ParkingLot.classInstance;
+    private static final int normalBays = 10;
+    private static final int EVBays = 10;
+    private static ParkingLot classInstance;
 
-        } else {
-            return ParkingLot.classInstance;
+    public static ParkingLot getInstance() {
+        if (ParkingLot.classInstance == null) {
+            ParkingLot.classInstance = new ParkingLot();
+        }
+        return ParkingLot.classInstance;
+    }
+
+    private ParkingLot() {
+        this.bays = new ArrayList<>(ParkingLot.normalBays + ParkingLot.EVBays);
+
+        for (int i = 0; i < ParkingLot.normalBays; i++) {
+            this.bays.add(new ParkingBay(this.generateBayID()));
+        }
+
+        for (int i = 0; i < ParkingLot.EVBays; i++) {
+            this.bays.add(new EVParkingBay(this.generateBayID()));
         }
     }
 
-    private ParkingLot(int baySize) {
-        this.baySize = baySize;
-        this.bays = new ArrayList<>(this.baySize);
-    }
-
     public ArrayList<ParkingBay> getBays() {
-        return this.bays;
+        // We do not want to allow external classes to modify the bays in the ParkingLot
+        return new ArrayList<>(this.bays);
     }
 
-    public int getBaySize() {
-        return this.baySize;
+    public void allocate(String vehicleNumber, int bayID) {
+        ParkingBay bay = null;
+        // TODO Use a hashmap to avoid this
+        // P.S - haven't played around with it yet
+
+        for (int i = 0; i < this.bays.size(); i++) {
+            if (this.bays.get(i).bayID == bayID) {
+                bay = this.bays.get(i);
+            }
+        }
+
+        bay.setAllocatedTo(vehicleNumber);
+        System.out.println("Vehicle " + vehicleNumber + " was allocated to bay " + bay.bayID);
+    }
+
+    public void deAllocate(int bayID) {
+        ParkingBay bay = null;
+        // TODO Use a hashmap to avoid this
+        // P.S - haven't played around with it yet
+
+        for (int i = 0; i < this.bays.size(); i++) {
+            if (this.bays.get(i).bayID == bayID) {
+                bay = this.bays.get(i);
+            }
+        }
+
+        bay.deAllocate();
+        System.out.println("Bay " + bay.bayID + " was deallocated");
+    }
+
+    private int generateBayID() {
+        return this.currentCount++;
     }
 }

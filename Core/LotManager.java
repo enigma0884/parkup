@@ -2,68 +2,60 @@ package Core;
 
 import java.util.ArrayList;
 
+import Core.Enums.BayTypes;
+import Core.Structures.EVParkingBay;
+import Core.Structures.ParkingBay;
+
 public class LotManager {
 
     private static LotManager classInstance;
-    private int currentCount = 0;
-    private final ArrayList<ParkingBay> bays;
+    private final ParkingLot lot;
 
     public static LotManager getInstance(ParkingLot lot) {
-        if (LotManager.classInstance.equals(null)) {
+        if (LotManager.classInstance == null) {
             LotManager.classInstance = new LotManager(lot);
-            return LotManager.classInstance;
-
-        } else {
-            return LotManager.classInstance;
         }
+
+        return LotManager.classInstance;
     }
 
     private LotManager(ParkingLot lot) {
-        this.bays = lot.getBays();
-
-        for (int i = 0; i < lot.getBaySize(); i++) {
-            this.bays.add(new ParkingBay(this.generateBayID()));
-        }
+        this.lot = lot;
     }
 
-    public void allocate(String vehicleNumber) {
+    public void allocate(String vehicleNumber, BayTypes type) {
         ParkingBay existingBay = this.findBayByVehicleNumber(vehicleNumber);
 
-        if (!existingBay.equals(null)) {
+        if (existingBay != null) {
             System.out.println("Vechile " + vehicleNumber + " has already been allocated to bay " + existingBay.bayID);
             return;
         }
 
-        ParkingBay emptyBay = this.findVacantBay();
-        if (emptyBay.equals(null)) {
+        ParkingBay emptyBay = this.findVacantBay(type);
+        if (emptyBay == null) {
             System.out.println("Sorry, we are full!");
-
-        } else {
-            emptyBay.setAllocatedTo(vehicleNumber);
-            System.out.println("Vehicle " + vehicleNumber + " was successfully allocated to bay " + emptyBay.bayID);
+            return;
         }
+
+        this.lot.allocate(vehicleNumber, emptyBay.bayID);
     }
 
     public void deAllocate(String vehicleNumber) {
         ParkingBay bay = this.findBayByVehicleNumber(vehicleNumber);
-        if (bay.equals(null)) {
+        if (bay == null) {
             System.out.println("Vehicle " + vehicleNumber + " has not been allocated to any bay");
-
-        } else {
-            bay.deAllocate();
-            System.out.println("Vehicle " + vehicleNumber + " was deallocated from bay " + bay.bayID);
+            return;
         }
-    }
 
-    public int generateBayID() {
-        return this.currentCount++;
+        this.lot.deAllocate(bay.bayID);
     }
 
     private ParkingBay findBayByVehicleNumber(String vehicleNumber) {
         ParkingBay bay = null;
+        ArrayList<ParkingBay> bays = this.lot.getBays();
 
         for (int i = 0; i < bays.size(); i++) {
-            if (vehicleNumber.equals(bays.get(i).getAllocatedTo())) {
+            if (vehicleNumber == bays.get(i).getAllocatedTo()) {
                 bay = bays.get(i);
                 break;
             }
@@ -72,8 +64,21 @@ public class LotManager {
         return bay;
     }
 
-    private ParkingBay findVacantBay() {
+    private ParkingBay findVacantBay(BayTypes type) {
         ParkingBay bay = null;
+        ArrayList<ParkingBay> bays = this.lot.getBays();
+
+        switch (type) {
+            case REGULAR: {
+                bays.removeIf(b -> (b instanceof EVParkingBay));
+                break;
+            }
+
+            case EV: {
+                bays.removeIf(b -> (b instanceof ParkingBay));
+                break;
+            }
+        }
 
         for (int i = 0; i < bays.size(); i++) {
             if (bays.get(i).isVacant()) {

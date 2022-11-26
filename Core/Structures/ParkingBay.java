@@ -1,7 +1,4 @@
-package Core;
-
-// TODO
-// DisabledPeopleParkingBay, VIPParkingBay, EVParkingBay
+package Core.Structures;
 
 public class ParkingBay {
 
