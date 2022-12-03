@@ -51,42 +51,33 @@ public class LotManager {
     }
 
     private ParkingBay findBayByVehicleNumber(String vehicleNumber) {
-        ParkingBay bay = null;
-        ArrayList<ParkingBay> bays = this.lot.getBays();
-
-        for (int i = 0; i < bays.size(); i++) {
-            if (vehicleNumber == bays.get(i).getAllocatedTo()) {
-                bay = bays.get(i);
-                break;
-            }
-        }
-
-        return bay;
+        return this.lot.getBays()
+                .stream()
+                .filter(b -> b.getAllocatedTo() == vehicleNumber)
+                .findFirst()
+                .orElse(null);
     }
 
     private ParkingBay findVacantBay(BayTypes type) {
-        ParkingBay bay = null;
         ArrayList<ParkingBay> bays = this.lot.getBays();
+        ParkingBay bay = null;
 
         switch (type) {
             case REGULAR: {
-                bays.removeIf(b -> (b instanceof EVParkingBay));
-                break;
+                bay = bays.stream()
+                        .filter(b -> b instanceof ParkingBay && b.isVacant())
+                        .findFirst()
+                        .orElse(null);
+
             }
 
             case EV: {
-                bays.removeIf(b -> (b instanceof ParkingBay));
-                break;
+                bay = bays.stream()
+                        .filter(b -> b instanceof EVParkingBay && b.isVacant())
+                        .findFirst()
+                        .orElse(null);
             }
         }
-
-        for (int i = 0; i < bays.size(); i++) {
-            if (bays.get(i).isVacant()) {
-                bay = bays.get(i);
-                break;
-            }
-        }
-
         return bay;
     }
 }
