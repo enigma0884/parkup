@@ -40,7 +40,7 @@ public class ParkingBay {
 
     @Override
     public String toString() {
-        return "bayID: " + this.bayID + "\ncheckedInAt: " + this.checkedInAt +
-                "\nallocatedTo: " + this.allocatedTo + "\nisVacant: " + this.isVacant;
+        return "ParkingBay [bayID=" + bayID + ", checkedInAt=" + checkedInAt + ", allocatedTo=" + allocatedTo
+                + ", isVacant=" + isVacant + "]";
     }
 }
